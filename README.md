@@ -1,54 +1,34 @@
-# phpunit/php-code-coverage
+# PHPUnit
 
-[![Latest Stable Version](https://poser.pugx.org/phpunit/php-code-coverage/v/stable.png)](https://packagist.org/packages/phpunit/php-code-coverage)
-[![CI Status](https://github.com/sebastianbergmann/php-code-coverage/workflows/CI/badge.svg)](https://github.com/sebastianbergmann/php-code-coverage/actions)
-[![codecov](https://codecov.io/gh/sebastianbergmann/php-code-coverage/branch/main/graph/badge.svg)](https://codecov.io/gh/sebastianbergmann/php-code-coverage)
+[![Latest Stable Version](https://poser.pugx.org/phpunit/phpunit/v)](https://packagist.org/packages/phpunit/phpunit)
+[![CI Status](https://github.com/sebastianbergmann/phpunit/workflows/CI/badge.svg)](https://github.com/sebastianbergmann/phpunit/actions)
+[![codecov](https://codecov.io/gh/sebastianbergmann/phpunit/branch/main/graph/badge.svg)](https://codecov.io/gh/sebastianbergmann/phpunit)
 
-Provides collection, processing, and rendering functionality for PHP code coverage information.
+PHPUnit is a programmer-oriented testing framework for PHP. It is an instance of the xUnit architecture for unit testing frameworks.
 
 ## Installation
 
-You can add this library as a local, per-project dependency to your project using [Composer](https://getcomposer.org/):
+We distribute a [PHP Archive (PHAR)](https://php.net/phar) that has all required (as well as some optional) dependencies of PHPUnit bundled in a single file:
 
-```
-composer require phpunit/php-code-coverage
-```
+```bash
+$ wget https://phar.phpunit.de/phpunit-X.Y.phar
 
-If you only need this library during development, for instance to run your project's test suite, then you should add it as a development-time dependency:
-
-```
-composer require --dev phpunit/php-code-coverage
+$ php phpunit-X.Y.phar --version
 ```
 
-## Usage
+Please replace `X.Y` with the version of PHPUnit you are interested in.
 
-```php
-<?php declare(strict_types=1);
-use SebastianBergmann\CodeCoverage\Filter;
-use SebastianBergmann\CodeCoverage\Driver\Selector;
-use SebastianBergmann\CodeCoverage\CodeCoverage;
-use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
+Alternatively, you may use [Composer](https://getcomposer.org/) to download and install PHPUnit as well as its dependencies. Please refer to the [documentation](https://phpunit.de/documentation.html) for details on how to install PHPUnit.
 
-$filter = new Filter;
+## Contribute
 
-$filter->includeFiles(
-    [
-        '/path/to/file.php',
-        '/path/to/another_file.php',
-    ]
-);
+Please refer to [CONTRIBUTING.md](https://github.com/sebastianbergmann/phpunit/blob/main/.github/CONTRIBUTING.md) for information on how to contribute to PHPUnit and its related projects.
 
-$coverage = new CodeCoverage(
-    (new Selector)->forLineCoverage($filter),
-    $filter
-);
+## List of Contributors
 
-$coverage->start('<name of test>');
+Thanks to everyone who has contributed to PHPUnit! You can find a detailed list of contributors on every PHPUnit related package on GitHub. This list shows only the major components:
 
-// ...
+* [PHPUnit](https://github.com/sebastianbergmann/phpunit/graphs/contributors)
+* [php-code-coverage](https://github.com/sebastianbergmann/php-code-coverage/graphs/contributors)
 
-$coverage->stop();
-
-
-(new HtmlReport)->process($coverage, '/tmp/code-coverage-report');
-```
+A very special thanks to everyone who has contributed to the [documentation](https://github.com/sebastianbergmann/phpunit-documentation-english/graphs/contributors).
