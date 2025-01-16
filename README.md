@@ -1,294 +1,488 @@
-Mockery
-=======
+This is the PHP port of Hamcrest Matchers
+=========================================
 
-[![Build Status](https://github.com/mockery/mockery/actions/workflows/tests.yml/badge.svg)](https://github.com/mockery/mockery/actions)
-[![Supported PHP Version](https://badgen.net/packagist/php/mockery/mockery?color=8892bf)](https://www.php.net/supported-versions)
-[![Code Coverage](https://codecov.io/gh/mockery/mockery/branch/1.6.x/graph/badge.svg?token=oxHwVM56bT)](https://codecov.io/gh/mockery/mockery)
-[![Type Coverage](https://shepherd.dev/github/mockery/mockery/coverage.svg)](https://shepherd.dev/github/mockery/mockery)
-[![Latest Stable Version](https://poser.pugx.org/mockery/mockery/v/stable.svg)](https://packagist.org/packages/mockery/mockery)
-[![Total Downloads](https://poser.pugx.org/mockery/mockery/downloads.svg)](https://packagist.org/packages/mockery/mockery)
+[![Build Status](https://travis-ci.org/hamcrest/hamcrest-php.png?branch=master)](https://travis-ci.org/hamcrest/hamcrest-php)
 
-Mockery is a simple yet flexible PHP mock object framework for use in unit testing
-with PHPUnit, PHPSpec or any other testing framework. Its core goal is to offer a
-test double framework with a succinct API capable of clearly defining all possible
-object operations and interactions using a human readable Domain Specific Language
-(DSL). Designed as a drop in alternative to PHPUnit's phpunit-mock-objects library,
-Mockery is easy to integrate with PHPUnit and can operate alongside
-phpunit-mock-objects without the World ending.
+Hamcrest is a matching library originally written for Java, but
+subsequently ported to many other languages.  hamcrest-php is the
+official PHP port of Hamcrest and essentially follows a literal
+translation of the original Java API for Hamcrest, with a few
+Exceptions, mostly down to PHP language barriers:
 
-Mockery is released under a New BSD License.
+  1. `instanceOf($theClass)` is actually `anInstanceOf($theClass)`
 
-## Installation
+  2. `both(containsString('a'))->and(containsString('b'))`
+     is actually `both(containsString('a'))->andAlso(containsString('b'))`
 
-To install Mockery, run the command below and you will get the latest
-version
+  3. `either(containsString('a'))->or(containsString('b'))`
+     is actually `either(containsString('a'))->orElse(containsString('b'))`
 
-```sh
-composer require --dev mockery/mockery
+  4. Unless it would be non-semantic for a matcher to do so, hamcrest-php
+     allows dynamic typing for it's input, in "the PHP way". Exception are
+     where semantics surrounding the type itself would suggest otherwise,
+     such as stringContains() and greaterThan().
+
+  5. Several official matchers have not been ported because they don't
+     make sense or don't apply in PHP:
+
+       - `typeCompatibleWith($theClass)`
+       - `eventFrom($source)`
+       - `hasProperty($name)` **
+       - `samePropertyValuesAs($obj)` **
+
+  6. When most of the collections matchers are finally ported, PHP-specific
+     aliases will probably be created due to a difference in naming
+     conventions between Java's Arrays, Collections, Sets and Maps compared
+     with PHP's Arrays.
+
+---
+** [Unless we consider POPO's (Plain Old PHP Objects) akin to JavaBeans]
+     - The POPO thing is a joke.  Java devs coin the term POJO's (Plain Old
+       Java Objects).
+
+
+Usage
+-----
+
+Hamcrest matchers are easy to use as:
+
+```php
+Hamcrest_MatcherAssert::assertThat('a', Hamcrest_Matchers::equalToIgnoringCase('A'));
 ```
 
-## Documentation
+Alternatively, you can use the global proxy-functions:
 
-In older versions, this README file was the documentation for Mockery. Over time
-we have improved this, and have created an extensive documentation for you. Please
-use this README file as a starting point for Mockery, but do read the documentation
-to learn how to use Mockery.
+```php
+$result = true;
+// with an identifier
+assertThat("result should be true", $result, equalTo(true));
 
-The current version can be seen at [docs.mockery.io](http://docs.mockery.io).
+// without an identifier
+assertThat($result, equalTo(true));
 
-## PHPUnit Integration
+// evaluate a boolean expression
+assertThat($result === true);
 
-Mockery ships with some helpers if you are using PHPUnit. You can extend the
-[`Mockery\Adapter\Phpunit\MockeryTestCase`](library/Mockery/Adapter/Phpunit/MockeryTestCase.php)
-class instead of `PHPUnit\Framework\TestCase`, or if you are already using a
-custom base class for your tests, take a look at the traits available in the
-[`Mockery\Adapter\Phpunit`](library/Mockery/Adapter/Phpunit) namespace.
-
-## Test Doubles
-
-Test doubles (often called mocks) simulate the behaviour of real objects. They are
-commonly utilised to offer test isolation, to stand in for objects which do not
-yet exist, or to allow for the exploratory design of class APIs without
-requiring actual implementation up front.
-
-The benefits of a test double framework are to allow for the flexible generation
-and configuration of test doubles. They allow the setting of expected method calls
-and/or return values using a flexible API which is capable of capturing every
-possible real object behaviour in way that is stated as close as possible to a
-natural language description. Use the `Mockery::mock` method to create a test
-double.
-
-``` php
-$double = Mockery::mock();
+// with syntactic sugar is()
+assertThat(true, is(true));
 ```
 
-If you need Mockery to create a test double to satisfy a particular type hint,
-you can pass the type to the `mock` method.
+:warning: **NOTE:** the global proxy-functions aren't autoloaded by default, so you will need to load them first:
 
-``` php
-class Book {}
-
-interface BookRepository {
-    function find($id): Book;
-    function findAll(): array;
-    function add(Book $book): void;
-}
-
-$double = Mockery::mock(BookRepository::class);
+```php
+\Hamcrest\Util::registerGlobalFunctions();
 ```
 
-A detailed explanation of creating and working with test doubles is given in the
-documentation, [Creating test doubles](http://docs.mockery.io/en/latest/reference/creating_test_doubles.html)
-section.
+For brevity, all of the examples below use the proxy-functions.
 
-## Method Stubs 🎫
 
-A method stub is a mechanism for having your test double return canned responses
-to certain method calls. With stubs, you don't care how many times, if at all,
-the method is called. Stubs are used to provide indirect input to the system
-under test.
+Documentation
+-------------
+A tutorial can be found on the [Hamcrest site](https://code.google.com/archive/p/hamcrest/wikis/TutorialPHP.wiki).
 
-``` php
-$double->allows()->find(123)->andReturns(new Book());
 
-$book = $double->find(123);
+Available Matchers
+------------------
+* [Array](../master/README.md#array)
+* [Collection](../master/README.md#collection)
+* [Object](../master/README.md#object)
+* [Numbers](../master/README.md#numbers)
+* [Type checking](../master/README.md#type-checking)
+* [XML](../master/README.md#xml)
+
+
+### Array
+
+* `anArray` - evaluates an array
+```php
+assertThat([], anArray());
 ```
 
-If you have used Mockery before, you might see something new in the example
-above &mdash; we created a method stub using `allows`, instead of the "old"
-`shouldReceive` syntax. This is a new feature of Mockery v1, but fear not,
-the trusty ol' `shouldReceive` is still here.
-
-For new users of Mockery, the above example can also be written as:
-
-``` php
-$double->shouldReceive('find')->with(123)->andReturn(new Book());
-$book = $double->find(123);
+* `hasItemInArray` - check if item exists in array
+```php
+$list = range(2, 7, 2);
+$item = 4;
+assertThat($list, hasItemInArray($item));
 ```
 
-If your stub doesn't require specific arguments, you can also use this shortcut
-for setting up multiple calls at once:
+* `hasValue` - alias of hasItemInArray
 
-``` php
-$double->allows([
-    "findAll" => [new Book(), new Book()],
-]);
+* `arrayContainingInAnyOrder` - check if array contains elements in any order
+```php
+assertThat([2, 4, 6], arrayContainingInAnyOrder([6, 4, 2]));
+assertThat([2, 4, 6], arrayContainingInAnyOrder([4, 2, 6]));
 ```
 
-or
+* `containsInAnyOrder` - alias of arrayContainingInAnyOrder
 
-``` php
-$double->shouldReceive('findAll')
-    ->andReturn([new Book(), new Book()]);
+* `arrayContaining` - An array with elements that match the given matchers in the same order.
+```php
+assertThat([2, 4, 6], arrayContaining([2, 4, 6]));
+assertthat([2, 4, 6], not(arrayContaining([6, 4, 2])));
 ```
 
-You can also use this shortcut, which creates a double and sets up some stubs in
-one call:
-
-``` php
-$double = Mockery::mock(BookRepository::class, [
-    "findAll" => [new Book(), new Book()],
-]);
+* `contains` - check array in same order
+```php
+assertThat([2, 4, 6], contains([2, 4, 6]));
 ```
 
-## Method Call Expectations 📲
-
-A Method call expectation is a mechanism to allow you to verify that a
-particular method has been called. You can specify the parameters and you can
-also specify how many times you expect it to be called. Method call expectations
-are used to verify indirect output of the system under test.
-
-``` php
-$book = new Book();
-
-$double = Mockery::mock(BookRepository::class);
-$double->expects()->add($book);
+* `hasKeyInArray` - check if array has given key
+```php
+assertThat(['name'=> 'foobar'], hasKeyInArray('name'));
 ```
 
-During the test, Mockery accept calls to the `add` method as prescribed.
-After you have finished exercising the system under test, you need to
-tell Mockery to check that the method was called as expected, using the
-`Mockery::close` method. One way to do that is to add it to your `tearDown`
-method in PHPUnit.
+* `hasKey` - alias of hasKeyInArray
 
-``` php
+* `hasKeyValuePair` - check if arary has given key, value pair
+```php
+assertThat(['name'=> 'foobar'], hasKeyValuePair('name', 'foobar'));
+```
+* `hasEntry` - same as hasKeyValuePair
 
-public function tearDown()
-{
-    Mockery::close();
-}
+* `arrayWithSize` - check array has given size
+```php
+assertthat([2, 4, 6], arrayWithSize(3));
+```
+* `emptyArray` - check if array is emtpy
+```php
+assertThat([], emptyArray());
 ```
 
-The `expects()` method automatically sets up an expectation that the method call
-(and matching parameters) is called **once and once only**. You can choose to change
-this if you are expecting more calls.
-
-``` php
-$double->expects()->add($book)->twice();
+* `nonEmptyArray`
+```php
+assertThat([1], nonEmptyArray());
 ```
 
-If you have used Mockery before, you might see something new in the example
-above &mdash; we created a method expectation using `expects`, instead of the "old"
-`shouldReceive` syntax. This is a new feature of Mockery v1, but same as with
-`allows` in the previous section, it can be written in the "old" style.
+### Collection
 
-For new users of Mockery, the above example can also be written as:
-
-``` php
-$double->shouldReceive('find')
-    ->with(123)
-    ->once()
-    ->andReturn(new Book());
-$book = $double->find(123);
+* `emptyTraversable` - check if traversable is empty
+```php
+$empty_it = new EmptyIterator;
+assertThat($empty_it, emptyTraversable());
 ```
 
-A detailed explanation of declaring expectations on method calls, please
-read the documentation, the [Expectation declarations](http://docs.mockery.io/en/latest/reference/expectations.html)
-section. After that, you can also learn about the new `allows` and `expects` methods
-in the [Alternative shouldReceive syntax](http://docs.mockery.io/en/latest/reference/alternative_should_receive_syntax.html)
-section.
-
-It is worth mentioning that one way of setting up expectations is no better or worse
-than the other. Under the hood, `allows` and `expects` are doing the same thing as
-`shouldReceive`, at times in "less words", and as such it comes to a personal preference
-of the programmer which way to use.
-
-## Test Spies 🕵️
-
-By default, all test doubles created with the `Mockery::mock` method will only
-accept calls that they have been configured to `allow` or `expect` (or in other words,
-calls that they `shouldReceive`). Sometimes we don't necessarily care about all of the
-calls that are going to be made to an object. To facilitate this, we can tell Mockery
-to ignore any calls it has not been told to expect or allow. To do so, we can tell a
-test double `shouldIgnoreMissing`, or we can create the double using the `Mocker::spy`
-shortcut.
-
-``` php
-// $double = Mockery::mock()->shouldIgnoreMissing();
-$double = Mockery::spy();
-
-$double->foo(); // null
-$double->bar(); // null
+* `nonEmptyTraversable` - check if traversable isn't empty
+```php
+$non_empty_it = new ArrayIterator(range(1, 10));
+assertThat($non_empty_it, nonEmptyTraversable());
+a
 ```
 
-Further to this, sometimes we want to have the object accept any call during the test execution
-and then verify the calls afterwards. For these purposes, we need our test
-double to act as a Spy. All mockery test doubles record the calls that are made
-to them for verification afterwards by default:
-
-``` php
-$double->baz(123);
-
-$double->shouldHaveReceived()->baz(123); // null
-$double->shouldHaveReceived()->baz(12345); // Uncaught Exception Mockery\Exception\InvalidCountException...
+* `traversableWithSize`
+```php
+$non_empty_it = new ArrayIterator(range(1, 10));
+assertThat($non_empty_it, traversableWithSize(count(range(1, 10))));
+`
 ```
 
-Please refer to the [Spies](http://docs.mockery.io/en/latest/reference/spies.html) section
-of the documentation to learn more about the spies.
+### Core
 
-## Utilities 🔌
-
-### Global Helpers
-
-Mockery ships with a handful of global helper methods, you just need to ask
-Mockery to declare them.
-
-``` php
-Mockery::globalHelpers();
-
-$mock = mock(Some::class);
-$spy = spy(Some::class);
-
-$spy->shouldHaveReceived()
-    ->foo(anyArgs());
+* `allOf` - Evaluates to true only if ALL of the passed in matchers evaluate to true.
+```php
+assertThat([2,4,6], allOf(hasValue(2), arrayWithSize(3)));
 ```
 
-All of the global helpers are wrapped in a `!function_exists` call to avoid
-conflicts. So if you already have a global function called `spy`, Mockery will
-silently skip the declaring its own `spy` function.
+* `anyOf` - Evaluates to true if ANY of the passed in matchers evaluate to true.
+```php
+assertThat([2, 4, 6], anyOf(hasValue(8), hasValue(2)));
+```
 
-### Testing Traits
+* `noneOf` - Evaluates to false if ANY of the passed in matchers evaluate to true.
+```php
+assertThat([2, 4, 6], noneOf(hasValue(1), hasValue(3)));
+```
 
-As Mockery ships with code generation capabilities, it was trivial to add
-functionality allowing users to create objects on the fly that use particular
-traits. Any abstract methods defined by the trait will be created and can have
-expectations or stubs configured like normal Test Doubles.
+* `both` + `andAlso` - This is useful for fluently combining matchers that must both pass.
+```php
+assertThat([2, 4, 6], both(hasValue(2))->andAlso(hasValue(4)));
+```
 
-``` php
-trait Foo {
-    function foo() {
-        return $this->doFoo();
+* `either` + `orElse` - This is useful for fluently combining matchers where either may pass,
+```php
+assertThat([2, 4, 6], either(hasValue(2))->orElse(hasValue(4)));
+```
+
+* `describedAs` - Wraps an existing matcher and overrides the description when it fails.
+```php 
+$expected = "Dog";
+$found = null;
+// this assertion would result error message as Expected: is not null but: was null
+//assertThat("Expected {$expected}, got {$found}", $found, is(notNullValue()));
+// and this assertion would result error message as Expected: Dog but: was null
+//assertThat($found, describedAs($expected, notNullValue()));
+```
+
+* `everyItem` - A matcher to apply to every element in an array.
+```php
+assertThat([2, 4, 6], everyItem(notNullValue()));
+```
+
+* `hasItem` - check array has given item, it can take a matcher argument
+```php
+assertThat([2, 4, 6], hasItem(equalTo(2)));
+```
+
+* `hasItems` - check array has givem items, it can take multiple matcher as arguments
+```php
+assertThat([1, 3, 5], hasItems(equalTo(1), equalTo(3)));
+```
+
+### Object
+
+* `hasToString` - check `__toString` or `toString` method
+```php
+class Foo {
+    public $name = null;
+
+    public function __toString() {
+        return "[Foo]Instance";
     }
-
-    abstract function doFoo();
 }
-
-$double = Mockery::mock(Foo::class);
-$double->allows()->doFoo()->andReturns(123);
-$double->foo(); // int(123)
+$foo = new Foo;
+assertThat($foo, hasToString(equalTo("[Foo]Instance")));
 ```
 
-## Versioning
-
-The Mockery team attempts to adhere to [Semantic Versioning](http://semver.org),
-however, some of Mockery's internals are considered private and will be open to
-change at any time. Just because a class isn't final, or a method isn't marked
-private, does not mean it constitutes part of the API we guarantee under the
-versioning scheme.
-
-### Alternative Runtimes
-
-Mockery 1.3 was the last version to support HHVM 3 and PHP 5. There is no support for HHVM 4+.
-
-## A new home for Mockery
-
-⚠️️ Update your remotes! Mockery has transferred to a new location. While it was once
-at `padraic/mockery`, it is now at `mockery/mockery`. While your
-existing repositories will redirect transparently for any operations, take some
-time to transition to the new URL.
-```sh
-$ git remote set-url upstream https://github.com/mockery/mockery.git
+* `equalTo` - compares two instances using comparison operator '=='
+```php
+$foo = new Foo;
+$foo2 = new Foo;
+assertThat($foo, equalTo($foo2));
 ```
-Replace `upstream` with the name of the remote you use locally; `upstream` is commonly
-used but you may be using something else. Run `git remote -v` to see what you're actually
-using.
+
+* `identicalTo` - compares two instances using identity operator '==='
+```php
+assertThat($foo, is(not(identicalTo($foo2))));
+```
+
+* `anInstanceOf` - check instance is an instance|sub-class of given class
+```php
+assertThat($foo, anInstanceOf(Foo::class));
+```
+
+* `any` - alias of `anInstanceOf`
+
+* `nullValue` check null
+```php
+assertThat(null, is(nullValue()));
+```
+
+* `notNullValue` check not null
+```php
+assertThat("", notNullValue());
+```
+
+* `sameInstance` - check for same instance
+```php
+assertThat($foo, is(not(sameInstance($foo2))));
+assertThat($foo, is(sameInstance($foo)));
+```
+
+* `typeOf`- check type
+```php 
+assertThat(1, typeOf("integer"));
+```
+
+* `notSet` - check if instance property is not set
+```php
+assertThat($foo, notSet("name"));
+```
+
+* `set` - check if instance property is set
+```php
+$foo->name = "bar";
+assertThat($foo, set("name"));
+```
+
+### Numbers
+
+* `closeTo` - check value close to a range
+```php
+assertThat(3, closeTo(3, 0.5));
+```
+
+* `comparesEqualTo` - check with '=='
+```php
+assertThat(2, comparesEqualTo(2));
+```
+
+* `greaterThan` - check '>'
+```
+assertThat(2, greaterThan(1));
+```
+
+* `greaterThanOrEqualTo`
+```php
+assertThat(2, greaterThanOrEqualTo(2));
+```
+
+* `atLeast` - The value is >= given value
+```php
+assertThat(3, atLeast(2));
+```
+* `lessThan`
+```php
+assertThat(2, lessThan(3));
+```
+
+* `lessThanOrEqualTo`
+```php
+assertThat(2, lessThanOrEqualTo(3));
+```
+
+* `atMost` - The value is <= given value
+```php
+assertThat(2, atMost(3));
+```
+
+### String
+
+* `emptyString` - check for empty string
+```php
+assertThat("", emptyString());
+```
+
+* `isEmptyOrNullString`
+```php
+assertThat(null, isEmptyOrNullString());
+```
+
+* `nullOrEmptyString`
+```php
+assertThat("", nullOrEmptyString());
+```
+
+* `isNonEmptyString`
+```php
+assertThat("foo", isNonEmptyString());
+```
+
+* `nonEmptyString`
+```php
+assertThat("foo", nonEmptyString());
+```
+
+* `equalToIgnoringCase`
+```php
+assertThat("Foo", equalToIgnoringCase("foo"));
+```
+* `equalToIgnoringWhiteSpace`
+```php
+assertThat(" Foo ", equalToIgnoringWhiteSpace("Foo"));
+```
+
+* `matchesPattern` - matches with regex pattern
+```php
+assertThat("foobarbaz", matchesPattern('/(foo)(bar)(baz)/'));
+```
+
+* `containsString` - check for substring
+```php
+assertThat("foobar", containsString("foo"));
+```
+
+* `containsStringIgnoringCase`
+```php
+assertThat("fooBar", containsStringIgnoringCase("bar"));
+```
+
+* `stringContainsInOrder`
+```php
+assertThat("foo", stringContainsInOrder("foo"));
+```
+
+* `endsWith` - check string that ends with given value
+```php
+assertThat("foo", endsWith("oo"));
+```
+
+* `startsWith` - check string that starts with given value
+```php
+assertThat("bar", startsWith("ba"));
+```
+
+### Type-checking
+
+* `arrayValue` - check array type
+```php
+assertThat([], arrayValue());
+```
+
+* `booleanValue`
+```php
+assertThat(true, booleanValue());
+```
+* `boolValue` - alias of booleanValue
+
+* `callableValue` - check if value is callable
+```php
+$func = function () {};
+assertThat($func, callableValue());
+```
+* `doubleValue`
+```php
+assertThat(3.14, doubleValue());
+```
+
+* `floatValue`
+```php
+assertThat(3.14, floatValue());
+```
+
+* `integerValue`
+```php
+assertThat(1, integerValue());
+```
+
+* `intValue` - alias of `integerValue`
+
+* `numericValue` - check if value is numeric
+```php
+assertThat("123", numericValue());
+```
+
+* `objectValue` - check for object
+```php
+$obj = new stdClass;
+assertThat($obj, objectValue());
+```
+* `anObject`
+```php
+assertThat($obj, anObject());
+```
+
+* `resourceValue` - check resource type
+```php
+$fp = fopen("/tmp/foo", "w+");
+assertThat($fp, resourceValue());
+```
+
+* `scalarValue` - check for scaler value
+```php
+assertThat(1, scalarValue());
+```
+
+* `stringValue`
+```php
+assertThat("", stringValue());
+```
+
+### XML
+
+* `hasXPath` - check xml with a xpath
+```php
+$xml = <<<XML
+<books>
+  <book>
+    <isbn>1</isbn>   
+  </book>
+  <book>
+    <isbn>2</isbn>   
+  </book>
+</books>
+XML;
+
+$doc = new DOMDocument;
+$doc->loadXML($xml);
+assertThat($doc, hasXPath("book", 2));
+```
+
