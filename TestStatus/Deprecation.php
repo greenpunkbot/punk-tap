@@ -16,10 +16,20 @@ namespace PHPUnit\Framework\TestStatus;
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-abstract readonly class Known extends TestStatus
+final readonly class Deprecation extends Known
 {
-    public function isKnown(): true
+    public function isDeprecation(): true
     {
         return true;
+    }
+
+    public function asInt(): int
+    {
+        return 4;
+    }
+
+    public function asString(): string
+    {
+        return 'deprecation';
     }
 }

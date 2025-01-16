@@ -7,19 +7,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\TestStatus;
+namespace PHPUnit\Framework;
 
 /**
- * @immutable
- *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-abstract readonly class Known extends TestStatus
+class AssertionFailedError extends Exception implements SelfDescribing
 {
-    public function isKnown(): true
+    /**
+     * Wrapper for getMessage() which is declared as final.
+     */
+    public function toString(): string
     {
-        return true;
+        return $this->getMessage();
     }
 }

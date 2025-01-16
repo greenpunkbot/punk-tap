@@ -7,19 +7,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\TestStatus;
+namespace PHPUnit\Framework;
+
+use function sprintf;
 
 /**
- * @immutable
- *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-abstract readonly class Known extends TestStatus
+final class ComparisonMethodDoesNotAcceptParameterTypeException extends Exception
 {
-    public function isKnown(): true
+    public function __construct(string $className, string $methodName, string $type)
     {
-        return true;
+        parent::__construct(
+            sprintf(
+                '%s is not an accepted argument type for comparison method %s::%s().',
+                $type,
+                $className,
+                $methodName,
+            ),
+        );
     }
 }

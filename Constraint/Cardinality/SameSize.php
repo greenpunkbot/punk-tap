@@ -7,19 +7,23 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\TestStatus;
+namespace PHPUnit\Framework\Constraint;
+
+use Countable;
+use PHPUnit\Framework\Exception;
 
 /**
- * @immutable
- *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
- *
- * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-abstract readonly class Known extends TestStatus
+final class SameSize extends Count
 {
-    public function isKnown(): true
+    /**
+     * @param Countable|iterable<mixed> $expected
+     *
+     * @throws Exception
+     */
+    public function __construct(Countable|iterable $expected)
     {
-        return true;
+        parent::__construct((int) $this->getCountOf($expected));
     }
 }
