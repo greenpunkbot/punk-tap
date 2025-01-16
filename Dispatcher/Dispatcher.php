@@ -11,7 +11,13 @@ namespace PHPUnit\Event;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ *
+ * @internal This interface is not covered by the backward compatibility promise for PHPUnit
  */
-final class InvalidArgumentException extends \InvalidArgumentException implements Exception
+interface Dispatcher
 {
+    /**
+     * @throws UnknownEventTypeException
+     */
+    public function dispatch(Event $event): void;
 }
