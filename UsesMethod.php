@@ -7,17 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\Attributes;
-
-use Attribute;
+namespace PHPUnit\Metadata;
 
 /**
  * @immutable
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-final readonly class UsesMethod
+final readonly class UsesMethod extends Metadata
 {
     /**
      * @var class-string
@@ -30,13 +27,21 @@ final readonly class UsesMethod
     private string $methodName;
 
     /**
+     * @param 0|1              $level
      * @param class-string     $className
      * @param non-empty-string $methodName
      */
-    public function __construct(string $className, $methodName)
+    protected function __construct(int $level, string $className, string $methodName)
     {
+        parent::__construct($level);
+
         $this->className  = $className;
         $this->methodName = $methodName;
+    }
+
+    public function isUsesMethod(): true
+    {
+        return true;
     }
 
     /**
@@ -53,5 +58,15 @@ final readonly class UsesMethod
     public function methodName(): string
     {
         return $this->methodName;
+    }
+
+    /**
+     * @return non-empty-string
+     *
+     * @internal This method is not covered by the backward compatibility promise for PHPUnit
+     */
+    public function asStringForCodeUnitMapper(): string
+    {
+        return $this->className . '::' . $this->methodName;
     }
 }

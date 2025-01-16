@@ -7,17 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\Attributes;
-
-use Attribute;
+namespace PHPUnit\Metadata;
 
 /**
  * @immutable
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-final readonly class UsesTrait
+final readonly class UsesTrait extends Metadata
 {
     /**
      * @var trait-string
@@ -25,17 +22,35 @@ final readonly class UsesTrait
     private string $traitName;
 
     /**
+     * @param 0|1          $level
      * @param trait-string $traitName
      */
-    public function __construct(string $traitName)
+    protected function __construct(int $level, string $traitName)
     {
+        parent::__construct($level);
+
         $this->traitName = $traitName;
+    }
+
+    public function isUsesTrait(): true
+    {
+        return true;
     }
 
     /**
      * @return trait-string
      */
     public function traitName(): string
+    {
+        return $this->traitName;
+    }
+
+    /**
+     * @return trait-string
+     *
+     * @internal This method is not covered by the backward compatibility promise for PHPUnit
+     */
+    public function asStringForCodeUnitMapper(): string
     {
         return $this->traitName;
     }

@@ -7,20 +7,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\Attributes;
-
-use Attribute;
+namespace PHPUnit\Metadata;
 
 /**
  * @immutable
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
-#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-final readonly class TestWith
+final readonly class TestWith extends Metadata
 {
     /**
-     * @var array<mixed>
+     * @var array<array<mixed>>
      */
     private array $data;
 
@@ -30,21 +27,37 @@ final readonly class TestWith
     private ?string $name;
 
     /**
-     * @param array<mixed>      $data
-     * @param ?non-empty-string $name
+     * @param 0|1                 $level
+     * @param array<array<mixed>> $data
+     * @param ?non-empty-string   $name
      */
-    public function __construct(array $data, ?string $name = null)
+    protected function __construct(int $level, array $data, ?string $name = null)
     {
+        parent::__construct($level);
+
         $this->data = $data;
         $this->name = $name;
     }
 
+    public function isTestWith(): true
+    {
+        return true;
+    }
+
     /**
-     * @return array<mixed>
+     * @return array<array<mixed>>
      */
     public function data(): array
     {
         return $this->data;
+    }
+
+    /**
+     * @phpstan-assert-if-true !null $this->name
+     */
+    public function hasName(): bool
+    {
+        return $this->name !== null;
     }
 
     /**

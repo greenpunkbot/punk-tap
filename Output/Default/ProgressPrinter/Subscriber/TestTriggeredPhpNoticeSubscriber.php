@@ -7,15 +7,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\TextUI;
+namespace PHPUnit\TextUI\Output\Default\ProgressPrinter;
 
-use RuntimeException;
+use PHPUnit\Event\Test\PhpNoticeTriggered;
+use PHPUnit\Event\Test\PhpNoticeTriggeredSubscriber;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class ReflectionException extends RuntimeException implements Exception
+final readonly class TestTriggeredPhpNoticeSubscriber extends Subscriber implements PhpNoticeTriggeredSubscriber
 {
+    public function notify(PhpNoticeTriggered $event): void
+    {
+        $this->printer()->testTriggeredPhpNotice($event);
+    }
 }

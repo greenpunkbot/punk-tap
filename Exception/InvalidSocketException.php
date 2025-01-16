@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\TextUI;
 
+use function sprintf;
 use RuntimeException;
 
 /**
@@ -16,6 +17,15 @@ use RuntimeException;
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class ReflectionException extends RuntimeException implements Exception
+final class InvalidSocketException extends RuntimeException implements Exception
 {
+    public function __construct(string $socket)
+    {
+        parent::__construct(
+            sprintf(
+                '"%s" does not match "socket://hostname:port" format',
+                $socket,
+            ),
+        );
+    }
 }
