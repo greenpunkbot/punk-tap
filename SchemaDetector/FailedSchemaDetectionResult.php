@@ -9,13 +9,13 @@
  */
 namespace PHPUnit\TextUI\XmlConfiguration;
 
-use RuntimeException;
-
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
+ *
+ * @immutable
  */
-final class Exception extends RuntimeException implements \PHPUnit\Exception
+final readonly class FailedSchemaDetectionResult extends SchemaDetectionResult
 {
 }

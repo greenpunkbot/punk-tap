@@ -9,13 +9,30 @@
  */
 namespace PHPUnit\TextUI\XmlConfiguration;
 
-use RuntimeException;
+use PHPUnit\Util\Xml\XmlException;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
+ *
+ * @immutable
  */
-final class Exception extends RuntimeException implements \PHPUnit\Exception
+abstract readonly class SchemaDetectionResult
 {
+    /**
+     * @phpstan-assert-if-true SuccessfulSchemaDetectionResult $this
+     */
+    public function detected(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @throws XmlException
+     */
+    public function version(): string
+    {
+        throw new XmlException('No supported schema was detected');
+    }
 }
