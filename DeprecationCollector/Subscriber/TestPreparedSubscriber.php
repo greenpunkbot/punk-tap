@@ -7,15 +7,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Runner;
+namespace PHPUnit\Runner\DeprecationCollector;
 
-use RuntimeException;
+use PHPUnit\Event\Test\Prepared;
+use PHPUnit\Event\Test\PreparedSubscriber;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class ReflectionException extends RuntimeException implements Exception
+final class TestPreparedSubscriber extends Subscriber implements PreparedSubscriber
 {
+    public function notify(Prepared $event): void
+    {
+        $this->collector()->testPrepared();
+    }
 }

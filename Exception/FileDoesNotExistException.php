@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Runner;
 
+use function sprintf;
 use RuntimeException;
 
 /**
@@ -16,6 +17,15 @@ use RuntimeException;
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class ReflectionException extends RuntimeException implements Exception
+final class FileDoesNotExistException extends RuntimeException implements Exception
 {
+    public function __construct(string $file)
+    {
+        parent::__construct(
+            sprintf(
+                'File "%s" does not exist',
+                $file,
+            ),
+        );
+    }
 }

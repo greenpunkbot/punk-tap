@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Runner;
 
+use function sprintf;
 use RuntimeException;
 
 /**
@@ -16,6 +17,16 @@ use RuntimeException;
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class ReflectionException extends RuntimeException implements Exception
+final class ClassIsAbstractException extends RuntimeException implements Exception
 {
+    public function __construct(string $className, string $file)
+    {
+        parent::__construct(
+            sprintf(
+                'Class %s declared in %s is abstract',
+                $className,
+                $file,
+            ),
+        );
+    }
 }
