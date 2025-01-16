@@ -1,61 +1,50 @@
-# Version
+[![Latest Stable Version](https://poser.pugx.org/sebastian/version/v/stable.png)](https://packagist.org/packages/sebastian/version)
 
-Library for handling version information and constraints
+# sebastian/version
 
-[![Build Status](https://travis-ci.org/phar-io/version.svg?branch=master)](https://travis-ci.org/phar-io/version)
+**sebastian/version** is a library that helps with managing the version number of Git-hosted PHP projects.
 
 ## Installation
 
 You can add this library as a local, per-project dependency to your project using [Composer](https://getcomposer.org/):
 
-    composer require phar-io/version
+```
+composer require sebastian/version
+```
 
 If you only need this library during development, for instance to run your project's test suite, then you should add it as a development-time dependency:
 
-    composer require --dev phar-io/version
+```
+composer require --dev sebastian/version
+```
+## Usage
 
-## Version constraints
+The constructor of the `SebastianBergmann\Version` class expects two parameters:
 
-A Version constraint describes a range of versions or a discrete version number. The format of version numbers follows the schema of [semantic versioning](http://semver.org): `<major>.<minor>.<patch>`. A constraint might contain an operator that describes the range.
+* `$release` is the version number of the latest release (`X.Y.Z`, for instance) or the name of the release series (`X.Y`) when no release has been made from that branch / for that release series yet.
+* `$path` is the path to the directory (or a subdirectory thereof) where the sourcecode of the project can be found. Simply passing `__DIR__` here usually suffices.
 
-Beside the typical mathematical operators like `<=`, `>=`, there are two special operators:
+Apart from the constructor, the `SebastianBergmann\Version` class has a single public method: `asString()`.
 
-*Caret operator*: `^1.0`
-can be written as `>=1.0.0 <2.0.0` and read as »every Version within major version `1`«.
-
-*Tilde operator*: `~1.0.0`
-can be written as `>=1.0.0 <1.1.0` and read as »every version within minor version `1.1`. The behavior of tilde operator depends on whether a patch level version is provided or not. If no patch level is provided, tilde operator behaves like the caret operator: `~1.0` is identical to `^1.0`.
-
-## Usage examples
-
-Parsing version constraints and check discrete versions for compliance:
+Here is a contrived example that shows the basic usage:
 
 ```php
+<?php declare(strict_types=1);
+use SebastianBergmann\Version;
 
-use PharIo\Version\Version;
-use PharIo\Version\VersionConstraintParser;
+$version = new Version('1.0.0', __DIR__);
 
-$parser = new VersionConstraintParser();
-$caret_constraint = $parser->parse( '^7.0' );
-
-$caret_constraint->complies( new Version( '7.0.17' ) ); // true
-$caret_constraint->complies( new Version( '7.1.0' ) ); // true
-$caret_constraint->complies( new Version( '6.4.34' ) ); // false
-
-$tilde_constraint = $parser->parse( '~1.1.0' );
-
-$tilde_constraint->complies( new Version( '1.1.4' ) ); // true
-$tilde_constraint->complies( new Version( '1.2.0' ) ); // false
+var_dump($version->asString());
+```
+```
+string(18) "1.0.0-17-g00f3408"
 ```
 
-As of version 2.0.0, pre-release labels are supported and taken into account when comparing versions:
+When a new release is prepared, the string that is passed to the constructor as the first argument needs to be updated.
 
-```php
+### How SebastianBergmann\Version::asString() works
 
-$leftVersion = new PharIo\Version\Version('3.0.0-alpha.1');
-$rightVersion = new PharIo\Version\Version('3.0.0-alpha.2');
-
-$leftVersion->isGreaterThan($rightVersion); // false
-$rightVersion->isGreaterThan($leftVersion); // true
-
-``` 
+* If `$path` is not (part of) a Git repository and `$release` is in `X.Y.Z` format then `$release` is returned as-is.
+* If `$path` is not (part of) a Git repository and `$release` is in `X.Y` format then `$release` is returned suffixed with `-dev`.
+* If `$path` is (part of) a Git repository and `$release` is in `X.Y.Z` format then the output of `git describe --tags` is returned as-is.
+* If `$path` is (part of) a Git repository and `$release` is in `X.Y` format then a string is returned that begins with `X.Y` and ends with information from `git describe --tags`.
