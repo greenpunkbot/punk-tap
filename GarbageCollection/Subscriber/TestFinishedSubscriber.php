@@ -7,29 +7,25 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\TestSize;
+namespace PHPUnit\Runner\GarbageCollection;
+
+use PHPUnit\Event\InvalidArgumentException;
+use PHPUnit\Event\Test\Finished;
+use PHPUnit\Event\Test\FinishedSubscriber;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
- *
- * @immutable
  */
-final readonly class Large extends Known
+final readonly class TestFinishedSubscriber extends Subscriber implements FinishedSubscriber
 {
-    public function isLarge(): true
+    /**
+     * @throws \PHPUnit\Framework\InvalidArgumentException
+     * @throws InvalidArgumentException
+     */
+    public function notify(Finished $event): void
     {
-        return true;
-    }
-
-    public function isGreaterThan(TestSize $other): bool
-    {
-        return !$other->isLarge();
-    }
-
-    public function asString(): string
-    {
-        return 'large';
+        $this->handler()->testFinished();
     }
 }

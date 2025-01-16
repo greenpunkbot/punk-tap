@@ -7,29 +7,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\TestSize;
+namespace PHPUnit\TestRunner\TestResult;
+
+use PHPUnit\Event\Test\ErrorTriggered;
+use PHPUnit\Event\Test\ErrorTriggeredSubscriber;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
- *
- * @immutable
  */
-final readonly class Large extends Known
+final readonly class TestTriggeredErrorSubscriber extends Subscriber implements ErrorTriggeredSubscriber
 {
-    public function isLarge(): true
+    public function notify(ErrorTriggered $event): void
     {
-        return true;
-    }
-
-    public function isGreaterThan(TestSize $other): bool
-    {
-        return !$other->isLarge();
-    }
-
-    public function asString(): string
-    {
-        return 'large';
+        $this->collector()->testTriggeredError($event);
     }
 }

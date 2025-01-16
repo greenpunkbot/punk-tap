@@ -7,29 +7,24 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Framework\TestSize;
+namespace PHPUnit\TestRunner\TestResult;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
- *
- * @immutable
  */
-final readonly class Large extends Known
+abstract readonly class Subscriber
 {
-    public function isLarge(): true
+    private Collector $collector;
+
+    public function __construct(Collector $collector)
     {
-        return true;
+        $this->collector = $collector;
     }
 
-    public function isGreaterThan(TestSize $other): bool
+    protected function collector(): Collector
     {
-        return !$other->isLarge();
-    }
-
-    public function asString(): string
-    {
-        return 'large';
+        return $this->collector;
     }
 }
