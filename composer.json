@@ -1,13 +1,12 @@
 {
-    "name": "illuminate/database",
-    "description": "The Illuminate Database package.",
+    "name": "laravel/breeze",
+    "description": "Minimal Laravel authentication scaffolding with Blade and Tailwind.",
+    "keywords": ["laravel", "auth"],
     "license": "MIT",
-    "homepage": "https://laravel.com",
     "support": {
-        "issues": "https://github.com/laravel/framework/issues",
-        "source": "https://github.com/laravel/framework"
+        "issues": "https://github.com/laravel/breeze/issues",
+        "source": "https://github.com/laravel/breeze"
     },
-    "keywords": ["laravel", "database", "sql", "orm"],
     "authors": [
         {
             "name": "Taylor Otwell",
@@ -15,36 +14,32 @@
         }
     ],
     "require": {
-        "php": "^8.2",
-        "ext-pdo": "*",
-        "brick/math": "^0.9.3|^0.10.2|^0.11|^0.12",
-        "illuminate/collections": "^11.0",
-        "illuminate/container": "^11.0",
-        "illuminate/contracts": "^11.0",
-        "illuminate/macroable": "^11.0",
-        "illuminate/support": "^11.0"
+        "php": "^8.2.0",
+        "illuminate/console": "^11.0",
+        "illuminate/filesystem": "^11.0",
+        "illuminate/support": "^11.0",
+        "illuminate/validation": "^11.0",
+        "symfony/console": "^7.0"
     },
     "autoload": {
         "psr-4": {
-            "Illuminate\\Database\\": ""
+            "Laravel\\Breeze\\": "src/"
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "11.x-dev"
+        "laravel": {
+            "providers": [
+                "Laravel\\Breeze\\BreezeServiceProvider"
+            ]
         }
-    },
-    "suggest": {
-        "ext-filter": "Required to use the Postgres database driver.",
-        "fakerphp/faker": "Required to use the eloquent factory builder (^1.21).",
-        "illuminate/console": "Required to use the database commands (^11.0).",
-        "illuminate/events": "Required to use the observers with Eloquent (^11.0).",
-        "illuminate/filesystem": "Required to use the migrations (^11.0).",
-        "illuminate/pagination": "Required to paginate the result set (^11.0).",
-        "symfony/finder": "Required to use Eloquent model factories (^7.0)."
     },
     "config": {
         "sort-packages": true
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^9.0",
+        "phpstan/phpstan": "^1.10"
+    }
 }

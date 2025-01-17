@@ -1,69 +1,39 @@
-## Illuminate Database
+<p align="center"><img src="/art/logo.svg" alt="Logo Laravel Breeze"></p>
 
-The Illuminate Database component is a full database toolkit for PHP, providing an expressive query builder, ActiveRecord style ORM, and schema builder. It currently supports MySQL, Postgres, SQL Server, and SQLite. It also serves as the database layer of the Laravel PHP framework.
+<p align="center">
+    <a href="https://packagist.org/packages/laravel/breeze">
+        <img src="https://img.shields.io/packagist/dt/laravel/breeze" alt="Total Downloads">
+    </a>
+    <a href="https://packagist.org/packages/laravel/breeze">
+        <img src="https://img.shields.io/packagist/v/laravel/breeze" alt="Latest Stable Version">
+    </a>
+    <a href="https://packagist.org/packages/laravel/breeze">
+        <img src="https://img.shields.io/packagist/l/laravel/breeze" alt="License">
+    </a>
+</p>
 
-### Usage Instructions
+## Introduction
 
-First, create a new "Capsule" manager instance. Capsule aims to make configuring the library for usage outside of the Laravel framework as easy as possible.
+Breeze provides a minimal and simple starting point for building a Laravel application with authentication. Styled with Tailwind, Breeze publishes authentication controllers and views to your application that can be easily customized based on your own application's needs.
 
-```PHP
-use Illuminate\Database\Capsule\Manager as Capsule;
+Laravel Breeze is powered by Blade and Tailwind. If you're looking for a more robust Laravel starter kit that includes two factor authentication, Livewire / Inertia support, and more, check out [Laravel Jetstream](https://jetstream.laravel.com).
 
-$capsule = new Capsule;
+## Official Documentation
 
-$capsule->addConnection([
-    'driver' => 'mysql',
-    'host' => 'localhost',
-    'database' => 'database',
-    'username' => 'root',
-    'password' => 'password',
-    'charset' => 'utf8',
-    'collation' => 'utf8_unicode_ci',
-    'prefix' => '',
-]);
+Documentation for Breeze can be found on the [Laravel website](https://laravel.com/docs/starter-kits#laravel-breeze).
 
-// Set the event dispatcher used by Eloquent models... (optional)
-use Illuminate\Events\Dispatcher;
-use Illuminate\Container\Container;
-$capsule->setEventDispatcher(new Dispatcher(new Container));
+## Contributing
 
-// Make this Capsule instance available globally via static methods... (optional)
-$capsule->setAsGlobal();
+Thank you for considering contributing to Breeze! You can read the contribution guide [here](.github/CONTRIBUTING.md).
 
-// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
-$capsule->bootEloquent();
-```
+## Code of Conduct
 
-> `composer require "illuminate/events"` required when you need to use observers with Eloquent.
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-Once the Capsule instance has been registered. You may use it like so:
+## Security Vulnerabilities
 
-**Using The Query Builder**
+Please review [our security policy](https://github.com/laravel/breeze/security/policy) on how to report security vulnerabilities.
 
-```PHP
-$users = Capsule::table('users')->where('votes', '>', 100)->get();
-```
-Other core methods may be accessed directly from the Capsule in the same manner as from the DB facade:
-```PHP
-$results = Capsule::select('select * from users where id = ?', [1]);
-```
+## License
 
-**Using The Schema Builder**
-
-```PHP
-Capsule::schema()->create('users', function ($table) {
-    $table->increments('id');
-    $table->string('email')->unique();
-    $table->timestamps();
-});
-```
-
-**Using The Eloquent ORM**
-
-```PHP
-class User extends Illuminate\Database\Eloquent\Model {}
-
-$users = User::where('votes', '>', 1)->get();
-```
-
-For further documentation on using the various database facilities this library provides, consult the [Laravel framework documentation](https://laravel.com/docs).
+Laravel Breeze is open-sourced software licensed under the [MIT license](LICENSE.md).
